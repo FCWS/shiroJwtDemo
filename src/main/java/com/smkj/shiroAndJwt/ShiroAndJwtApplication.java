@@ -3,6 +3,7 @@ package com.smkj.shiroAndJwt;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @MapperScan("com.smkj.shiroAndJwt.dao")
 @SpringBootApplication

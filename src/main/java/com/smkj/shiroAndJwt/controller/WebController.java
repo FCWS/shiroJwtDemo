@@ -25,7 +25,7 @@ public class WebController {
 
     @Resource
     private UserService userService;
-    
+
     @GetMapping("/article")
     public ResponseBean article() {
         Subject subject = SecurityUtils.getSubject();

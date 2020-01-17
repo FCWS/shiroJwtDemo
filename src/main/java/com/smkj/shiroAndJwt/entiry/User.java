@@ -8,6 +8,8 @@ public class User {
     private String nickName;
     private String password;
     private String avatar;
+    private Integer activity;
+    private Integer status;
     private String createdTime;
     private String loginTime;
 
@@ -51,6 +53,22 @@ public class User {
         this.avatar = avatar;
     }
 
+    public Integer getActivity() {
+        return activity;
+    }
+
+    public void setActivity(Integer activity) {
+        this.activity = activity;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public String getCreatedTime() {
         return createdTime;
     }
@@ -75,8 +93,10 @@ public class User {
                 ", nickName='" + nickName + '\'' +
                 ", password='" + password + '\'' +
                 ", avatar='" + avatar + '\'' +
-                ", createdTime=" + createdTime +
-                ", loginTime=" + loginTime +
+                ", activity=" + activity +
+                ", status=" + status +
+                ", createdTime='" + createdTime + '\'' +
+                ", loginTime='" + loginTime + '\'' +
                 '}';
     }
 }

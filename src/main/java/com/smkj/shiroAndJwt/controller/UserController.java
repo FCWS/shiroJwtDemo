@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.smkj.shiroAndJwt.bean.ResponseBean;
 import com.smkj.shiroAndJwt.entiry.User;
 import com.smkj.shiroAndJwt.exception.UnauthorizedException;
+import com.smkj.shiroAndJwt.service.MailService;
 import com.smkj.shiroAndJwt.service.UserService;
 import com.smkj.shiroAndJwt.util.JWTUtil;
 import org.apache.logging.log4j.LogManager;
@@ -24,6 +25,9 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private MailService mailService;
 
     @PostMapping("/register")
     public ResponseBean register(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
@@ -50,6 +54,7 @@ public class UserController {
                 return new ResponseBean(200, "未知原因导致注册失败，请联系管理员", null);
             }
             // 注册成功 -> 触发邮箱激活
+            mailService.send(user.getEmail(),"点击激活");
             return new ResponseBean(200, "注册成功", user);
         } catch (Exception e) {
             LOGGER.error(user.getEmail() + "用户注册失败， 失败原因：" + e.getMessage());
