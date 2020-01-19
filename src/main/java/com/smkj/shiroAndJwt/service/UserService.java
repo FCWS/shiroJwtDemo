@@ -8,5 +8,6 @@ public interface UserService {
     public User findUserByEmail(String email);
     public int activateWithCode(String code);
     public User findUserByCode(String code);
+    public int updateCodeByEmail(String email, String code, String time);
 
 }

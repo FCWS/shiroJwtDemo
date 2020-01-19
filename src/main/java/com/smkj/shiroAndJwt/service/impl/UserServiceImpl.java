@@ -32,4 +32,9 @@ public class UserServiceImpl implements UserService {
     public User findUserByCode(String code) {
         return userMapper.findUserByCode(code);
     }
+
+    @Override
+    public int updateCodeByEmail(String email, String code, String time) {
+        return userMapper.updateCodeByEmail(email, code, time);
+    }
 }

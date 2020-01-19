@@ -38,4 +38,8 @@
     <select id="findUserByCode" parameterType="java.lang.String" resultMap="userMap">
         SELECT * FROM u_user u WHERE code = #{code}
     </select>
+
+    <update id="updateCodeByEmail" parameterType="java.lang.String">
+        update u_user set code = #{code}, created_time = #{time} where email = #{email}
+    </update>
 </mapper>

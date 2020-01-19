@@ -10,6 +10,7 @@ import com.smkj.shiroAndJwt.util.JWTUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.crypto.hash.Sha512Hash;
 import org.springframework.web.bind.annotation.*;
 
@@ -105,11 +106,40 @@ public class UserController {
         User user = userService.findUserByEmail(email);
         if (user == null)
             return new ResponseBean(200, "用户不存在", null);
+        if (user.getActivity() == 0)
+            return new ResponseBean(200, "尚未激活，先激活", null);
         if (user.getPassword().equals(password)) {
             return new ResponseBean(200, "登录成功", JWTUtil.sign(email, password));
         } else {
             throw new UnauthorizedException();
         }
+    }
+
+    /**
+     * 重新发送激活码
+     * 只有登录用户 才能触发重新发送激活码
+     * desc: 激活码有效时间5分钟
+     * @param email
+     * @param request
+     * @param response
+     * @return
+     */
+    @PostMapping("reSendCode")
+    public ResponseBean reSendCode(@RequestParam String email, HttpServletRequest request, HttpServletResponse response) {
+        // 1、发送激活码
+        User user = userService.findUserByEmail(email);
+        if (user == null)
+            return new ResponseBean(200, "用户不存在", null);
+        if (user.getActivity() == 1)
+            return new ResponseBean(200, "账户已经激活", user);
+        String code = getCode();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        int count = userService.updateCodeByEmail(email, code, df.format(new Date()));
+        if (count < 0)
+            return new ResponseBean(200, "激活码发送失败", null);
+        String activateUrl = "<a href=\"http://localhost:8080/activate?code="+code+"\">点我激活，有效时间5分钟</a>";
+        sendEmailService.sendEmail(user.getEmail(), activateUrl);
+        return new ResponseBean(200, "激活码发送成功", null);
     }
 
     /**

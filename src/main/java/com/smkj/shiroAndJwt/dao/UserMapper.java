@@ -11,4 +11,5 @@ public interface UserMapper {
     public User findUserByEmail(String email);
     public int activateWithCode(String email);
     public User findUserByCode(String code);
+    public int updateCodeByEmail(String email, String code, String time);
 }
