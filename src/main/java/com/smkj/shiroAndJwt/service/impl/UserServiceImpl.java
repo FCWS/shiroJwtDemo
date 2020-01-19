@@ -22,4 +22,14 @@ public class UserServiceImpl implements UserService {
     public User findUserByEmail(String email) {
         return userMapper.findUserByEmail(email);
     }
+
+    @Override
+    public int activateWithCode(String code) {
+        return userMapper.activateWithCode(code);
+    }
+
+    @Override
+    public User findUserByCode(String code) {
+        return userMapper.findUserByCode(code);
+    }
 }

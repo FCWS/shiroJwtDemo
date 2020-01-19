@@ -1,12 +1,11 @@
 package com.smkj.shiroAndJwt.entiry;
 
-import java.util.Date;
-
 public class User {
     private Integer id;
     private String email;
     private String nickName;
     private String password;
+    private String code;
     private String avatar;
     private Integer activity;
     private Integer status;
@@ -43,6 +42,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getAvatar() {
@@ -92,6 +99,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", nickName='" + nickName + '\'' +
                 ", password='" + password + '\'' +
+                ", code='" + code + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", activity=" + activity +
                 ", status=" + status +

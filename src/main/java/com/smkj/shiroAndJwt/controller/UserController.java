@@ -4,11 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.smkj.shiroAndJwt.bean.ResponseBean;
 import com.smkj.shiroAndJwt.entiry.User;
 import com.smkj.shiroAndJwt.exception.UnauthorizedException;
-import com.smkj.shiroAndJwt.service.MailService;
+import com.smkj.shiroAndJwt.service.SendEmailService;
 import com.smkj.shiroAndJwt.service.UserService;
 import com.smkj.shiroAndJwt.util.JWTUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.crypto.hash.Sha512Hash;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 @RestController
 public class UserController {
@@ -27,7 +29,7 @@ public class UserController {
     private UserService userService;
 
     @Resource
-    private MailService mailService;
+    private SendEmailService sendEmailService;
 
     @PostMapping("/register")
     public ResponseBean register(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
@@ -39,6 +41,8 @@ public class UserController {
             if (password == null)
                 return new ResponseBean(200, "数据错误", "password can't null");
             int count = 0;
+            String code = getCode();
+            user.setCode(code);
             if (userService.findUserByEmail(user.getEmail()) != null) count = 1;
             System.out.println(user.getEmail() + "  " + count);
             if (count > 0) {
@@ -54,11 +58,42 @@ public class UserController {
                 return new ResponseBean(200, "未知原因导致注册失败，请联系管理员", null);
             }
             // 注册成功 -> 触发邮箱激活
-            mailService.send(user.getEmail(),"点击激活");
+            String activateUrl = "<a href=\"http://localhost:8080/activate?code="+code+"\">点我激活，有效时间5分钟</a>";
+            sendEmailService.sendEmail(user.getEmail(), activateUrl);
             return new ResponseBean(200, "注册成功", user);
         } catch (Exception e) {
             LOGGER.error(user.getEmail() + "用户注册失败， 失败原因：" + e.getMessage());
             return new ResponseBean(200, "注册失败", null);
+        }
+    }
+
+    @GetMapping("/activate")
+    public ResponseBean activate(@RequestParam String code, HttpServletResponse request, HttpServletResponse response) {
+        try {
+            if (code != null) {
+                // 根据code获取用户信息 判断验证码是否过期
+                User user = userService.findUserByCode(code);
+                if (user == null)
+                    return new ResponseBean(200, "无效激活码", null);
+                if (user.getActivity() == 1)
+                    return new ResponseBean(200, "不能重复激活", null);
+                String registerTime = user.getCreatedTime();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+                String currentTime = df.format(new Date().getTime() - 5 * 60 * 1000);
+                if (df.parse(currentTime).compareTo(df.parse(registerTime)) > 0)
+                    return new ResponseBean(200, "激活码超时", null);
+                int count = userService.activateWithCode(code);
+                if (count > 0) {
+                    user.setActivity(1);
+                    return new ResponseBean(200, "激活成功", user);
+                } else {
+                    return new ResponseBean(200, "激活失败", null);
+                }
+            } else {
+                return new ResponseBean(200, "激活失败", null);
+            }
+        } catch (Exception e) {
+            return new ResponseBean(200, e.getMessage(), null);
         }
     }
 
@@ -75,6 +110,21 @@ public class UserController {
         } else {
             throw new UnauthorizedException();
         }
+    }
+
+    /**
+     * 随机生成激活码
+     * @return
+     */
+    private String getCode() {
+        Random random = new Random();
+        String code = "";
+        for (int i = 0; i < 8; i++) {
+            int temp = random.nextInt(50);
+            char x = (char)(temp < 26 ? temp + 97 : (temp % 26) + 65);
+            code += x;
+        }
+        return code;
     }
 
 }

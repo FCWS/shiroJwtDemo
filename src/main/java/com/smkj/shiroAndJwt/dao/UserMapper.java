@@ -9,4 +9,6 @@ public interface UserMapper {
     public int isExistUser(String email);
     public int insertUser(User user);
     public User findUserByEmail(String email);
+    public int activateWithCode(String email);
+    public User findUserByCode(String code);
 }
