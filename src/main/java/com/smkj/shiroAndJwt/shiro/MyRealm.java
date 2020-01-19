@@ -57,7 +57,6 @@ public class MyRealm extends AuthorizingRealm {
 
         // 1、通过email拿到用户id
         Integer id = userService.findUserByEmail(email).getId();
-        System.out.println("查询到的id" + id);
 
         // 2、通过id获取role集合
         List<Role> roleList = roleService.findRolesByUserId(id);
@@ -65,9 +64,15 @@ public class MyRealm extends AuthorizingRealm {
         // 3、通过role获取到用户权限
         for (int index = 0; index < roleList.size(); index++) {
             roleStringList.add(roleList.get(index).getName());
-            Permission permission =  permissionService.findPermissionByRoleId(roleList.get(index).getId());
-            if (permission != null){
-                permissionStringList.add(permission.getName());
+            System.out.println("角色：" + roleList.get(index).getName());
+            System.out.println("角色ID：" + roleList.get(index).getId());
+            List<Permission> permissions =  permissionService.findPermissionByRoleId(roleList.get(index).getId());
+            for (int i = 0; i < permissions.size(); i++) {
+                Permission permission = permissions.get(i);
+                if (permission != null) {
+                    System.out.println("权限 " + permission.getName());
+                    permissionStringList.add(permission.getName());
+                }
             }
         }
 

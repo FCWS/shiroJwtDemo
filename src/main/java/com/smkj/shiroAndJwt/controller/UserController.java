@@ -2,6 +2,7 @@ package com.smkj.shiroAndJwt.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.smkj.shiroAndJwt.bean.ResponseBean;
+import com.smkj.shiroAndJwt.dao.RoleMapper;
 import com.smkj.shiroAndJwt.entiry.User;
 import com.smkj.shiroAndJwt.exception.UnauthorizedException;
 import com.smkj.shiroAndJwt.service.SendEmailService;
@@ -9,8 +10,6 @@ import com.smkj.shiroAndJwt.service.UserService;
 import com.smkj.shiroAndJwt.util.JWTUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.crypto.hash.Sha512Hash;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +29,9 @@ public class UserController {
     private UserService userService;
 
     @Resource
+    private RoleMapper roleMapper;
+
+    @Resource
     private SendEmailService sendEmailService;
 
     @PostMapping("/register")
@@ -42,28 +44,38 @@ public class UserController {
             if (password == null)
                 return new ResponseBean(200, "数据错误", "password can't null");
             int count = 0;
-            String code = getCode();
-            user.setCode(code);
             if (userService.findUserByEmail(user.getEmail()) != null) count = 1;
-            System.out.println(user.getEmail() + "  " + count);
-            if (count > 0) {
+            System.out.println(count);
+            if (count == 1) {
                 return new ResponseBean(200, "该账户已经存在", user);
             }
             // 密码加密
+            String code = getCode();
+            user.setCode(code);
             user.setPassword(new Sha512Hash(password).toString());
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
             user.setCreatedTime(df.format(new Date()));
             user.setLoginTime(df.format(new Date()));
-            count = userService.insertUser(user);
-            if (count < 0) {
+            System.out.println(user.toString());
+            userService.insertUser(user);
+            int id = user.getId();
+            if (id == 0) {
                 return new ResponseBean(200, "未知原因导致注册失败，请联系管理员", null);
             }
-            // 注册成功 -> 触发邮箱激活
+            System.out.println("插入id为：" + id);
+            // 触发邮箱激活
             String activateUrl = "<a href=\"http://localhost:8080/activate?code="+code+"\">点我激活，有效时间5分钟</a>";
             sendEmailService.sendEmail(user.getEmail(), activateUrl);
-            return new ResponseBean(200, "注册成功", user);
+            // 赋予普通用户权限
+            count = roleMapper.insertDefaultRole(id);
+            if (count > 0) {
+                return new ResponseBean(200, "注册成功", user);
+            } else {
+                return new ResponseBean(200, "初始化权限失败，请联系管理员", user);
+            }
+
         } catch (Exception e) {
-            LOGGER.error(user.getEmail() + "用户注册失败， 失败原因：" + e.getMessage());
+            LOGGER.error(user.getEmail() + " 用户注册失败， 失败原因：" + e.getMessage());
             return new ResponseBean(200, "注册失败", null);
         }
     }

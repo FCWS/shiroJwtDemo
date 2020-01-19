@@ -18,7 +18,7 @@
         select * from u_user where email = #{email}
     </select>
 
-    <insert id="insertUser" parameterType="com.smkj.shiroAndJwt.entiry.User">
+    <insert id="insertUser" parameterType="com.smkj.shiroAndJwt.entiry.User" keyProperty="id" useGeneratedKeys="true">
         insert into u_user (nickname, email, password, code, avatar, created_time, login_time)
         values(
             #{nickName},

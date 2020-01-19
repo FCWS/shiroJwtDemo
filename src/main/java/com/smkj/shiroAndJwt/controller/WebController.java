@@ -1,10 +1,7 @@
 package com.smkj.shiroAndJwt.controller;
 
 import com.smkj.shiroAndJwt.bean.ResponseBean;
-import com.smkj.shiroAndJwt.entiry.User;
-import com.smkj.shiroAndJwt.exception.UnauthorizedException;
 import com.smkj.shiroAndJwt.service.UserService;
-import com.smkj.shiroAndJwt.util.JWTUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
