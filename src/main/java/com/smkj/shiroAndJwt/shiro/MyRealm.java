@@ -64,13 +64,10 @@ public class MyRealm extends AuthorizingRealm {
         // 3、通过role获取到用户权限
         for (int index = 0; index < roleList.size(); index++) {
             roleStringList.add(roleList.get(index).getName());
-            System.out.println("角色：" + roleList.get(index).getName());
-            System.out.println("角色ID：" + roleList.get(index).getId());
             List<Permission> permissions =  permissionService.findPermissionByRoleId(roleList.get(index).getId());
             for (int i = 0; i < permissions.size(); i++) {
                 Permission permission = permissions.get(i);
                 if (permission != null) {
-                    System.out.println("权限 " + permission.getName());
                     permissionStringList.add(permission.getName());
                 }
             }

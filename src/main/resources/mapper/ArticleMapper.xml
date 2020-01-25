@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smkj.shiroAndJwt.dao.ArticleMapper">
+    <resultMap id="articleMap" type="com.smkj.shiroAndJwt.entiry.Article">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="author" property="author" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="context" property="context" jdbcType="VARCHAR"/>
+        <result column="intro" property="intro" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
+        <result column="is_publish" property="isPublish" jdbcType="INTEGER"/>
+        <result column="publish_msg" property="publishMsg" jdbcType="VARCHAR"/>
+    </resultMap>
+    <insert id="upload" parameterType="com.smkj.shiroAndJwt.entiry.Article" useGeneratedKeys="true" keyProperty="id">
+        INSERT into article (author, title, context, intro, update_time, is_publish, publish_msg)
+        VALUES (
+            #{author},
+            #{title},
+            #{context},
+            #{intro},
+            #{updateTime},
+            #{isPublish},
+            #{publishMsg}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="com.smkj.shiroAndJwt.entiry.Article">
+        DELETE FROM article where id = #{id}
+    </delete>
+
+    <update id="update" parameterType="com.smkj.shiroAndJwt.entiry.Article">
+        UPDATE article set context = #{context}, update_time = #{updateTime} WHERE id = #{id}
+    </update>
+
+    <select id="retrieve" parameterType="java.lang.String" resultMap="articleMap">
+        SELECT * FROM article WHERE title like "%"#{keyText}"%"
+    </select>
+</mapper>
