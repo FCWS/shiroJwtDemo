@@ -8,9 +8,18 @@
         <result column="context" property="context" jdbcType="VARCHAR"/>
         <result column="intro" property="intro" jdbcType="VARCHAR"/>
         <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
+        <result column="browser" property="browser" jdbcType="INTEGER"/>
         <result column="is_publish" property="isPublish" jdbcType="INTEGER"/>
         <result column="publish_msg" property="publishMsg" jdbcType="VARCHAR"/>
+        <result column="poll" property="poll" jdbcType="INTEGER"/>
     </resultMap>
+
+    <resultMap id="articlePollMap" type="com.smkj.shiroAndJwt.entiry.ArticlePoll">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="article_id" property="articleId" jdbcType="INTEGER"/>
+    </resultMap>
+
     <insert id="upload" parameterType="com.smkj.shiroAndJwt.entiry.Article" useGeneratedKeys="true" keyProperty="id">
         INSERT into article (author, title, context, intro, update_time, is_publish, publish_msg)
         VALUES (
@@ -34,5 +43,34 @@
 
     <select id="retrieve" parameterType="java.lang.String" resultMap="articleMap">
         SELECT * FROM article WHERE title like "%"#{keyText}"%"
+    </select>
+
+    <!-- 判断当前用户是否已经点赞， 如果已经点赞则取消点赞 -->
+    <select id="isSupport" parameterType="java.lang.Integer" resultMap="articlePollMap">
+        SELECT * FROM article_poll WHERE user_id = #{userId} and article_id = #{articleId}
+    </select>
+
+    <insert id="support" parameterType="java.lang.Integer">
+        INSERT INTO article_poll (user_id, article_id, poll)
+        VALUES (
+            #{userId},
+            #{articleId},
+            1
+        )
+    </insert>
+    <update id="cancelSupport" parameterType="java.lang.Integer">
+        UPDATE article_poll set poll = 0 WHERE user_id = #{userId} AND article_id = #{articleId}
+    </update>
+    
+    <update id="browser" parameterType="java.lang.Integer">
+        UPDATE article set browser = browser+1 WHERE id = #{articleId};
+    </update>
+
+    <select id="getAll" resultMap="articleMap">
+        SELECT * FROM article
+    </select>
+
+    <select id="getAllAuth" resultMap="articleMap">
+        SELECT article.*, article_poll.poll FROM article LEFT JOIN article_poll on article.id = article_poll.article_id and article_poll.user_id = #{userId}
     </select>
 </mapper>

@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Random;
 
 @RestController
+@RequestMapping("user")
 public class UserController {
 
     private static final Logger LOGGER = LogManager.getLogger(UserController.class);

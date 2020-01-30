@@ -8,8 +8,10 @@ public class Article {
     private String intro;
     private String uploadTime;
     private String updateTime;
+    private int browser;
     private int isPublish; // 文章发布状态 ---> 1、管理员审核通过，已经发布；2、尚未发布
     private int publishMsg; // 审核意见
+    private int poll;
 
     public int getId() {
         return id;
@@ -67,6 +69,14 @@ public class Article {
         this.updateTime = updateTime;
     }
 
+    public int getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(int browser) {
+        this.browser = browser;
+    }
+
     public int getIsPublish() {
         return isPublish;
     }
@@ -83,18 +93,11 @@ public class Article {
         this.publishMsg = publishMsg;
     }
 
-    @Override
-    public String toString() {
-        return "Article{" +
-                "id=" + id +
-                ", author='" + author + '\'' +
-                ", title='" + title + '\'' +
-                ", context='" + context + '\'' +
-                ", intro='" + intro + '\'' +
-                ", uploadTime='" + uploadTime + '\'' +
-                ", updateTime='" + updateTime + '\'' +
-                ", isPublish=" + isPublish +
-                ", publishMsg=" + publishMsg +
-                '}';
+    public int getPoll() {
+        return poll;
+    }
+
+    public void setPoll(int poll) {
+        this.poll = poll;
     }
 }
