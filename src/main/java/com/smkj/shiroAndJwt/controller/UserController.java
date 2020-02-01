@@ -122,7 +122,11 @@ public class UserController {
         if (user.getActivity() == 0)
             return new ResponseBean(200, "尚未激活，先激活", null);
         if (user.getPassword().equals(password)) {
-            return new ResponseBean(200, "登录成功", JWTUtil.sign(email, password));
+            String token = JWTUtil.sign(email, password);
+            response.setHeader("authorization", token);
+            // 注意：前端默认只能获取到默认返回头信息， 为了支持正常获取到authorization 必须设置下面的属性
+            response.setHeader("Access-Control-Expose-Headers", "authorization");
+            return new ResponseBean(200, "登录成功", token);
         } else {
             throw new UnauthorizedException();
         }

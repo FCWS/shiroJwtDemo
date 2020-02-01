@@ -8,10 +8,7 @@ import com.smkj.shiroAndJwt.service.ArticleService;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -115,7 +112,7 @@ public class ArticleController {
      */
     @RequiresAuthentication
     @PostMapping("/getAllAuth")
-    public ResponseBean getAllAuth(@RequestBody String data, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseBean getAllAuth(HttpServletRequest request, HttpServletResponse response) {
         try {
             List<Article> articles = articleService.getAllAuth();
             if (articles != null)
@@ -129,13 +126,12 @@ public class ArticleController {
 
     /**
      * 获取所有文章
-     * @param data
      * @param request
      * @param response
      * @return
      */
-    @PostMapping("/getAll")
-    public ResponseBean getAll(@RequestBody String data, HttpServletRequest request, HttpServletResponse response) {
+    @GetMapping("/getAll")
+    public ResponseBean getAll(HttpServletRequest request, HttpServletResponse response) {
         try {
             List<Article> articles = articleService.getAll();
             if (articles != null)
